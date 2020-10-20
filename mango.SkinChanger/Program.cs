@@ -29,7 +29,6 @@ namespace mango.SkinChanger
 
         static void Main(string[] args)
         {
-            // start init script when game already load
             GameEvent.OnGameLoad += OnGameLoad;
         }
 
@@ -37,45 +36,41 @@ namespace mango.SkinChanger
         {
             Game.Print("mango.SkinChanger loaded", Color.Coral);
 
+            //main menu
             MainMenu = new Menu("mango.SkinChanger", "mango.SkinChanger", true);
             MainMenu.Attach();
 
+            //menu bool
             var useSkinChanger = new MenuBool("useSkinChanger", "Use Skin Changer?", false);
             MainMenu.Add(useSkinChanger);
 
-            var skinNames = Test.Skins[ObjectManager.Player.CharacterName].Keys.ToArray();
+            //fetch champion skin names 
+            var skinNames = ChampionSkinData.Skins[ObjectManager.Player.CharacterName].Keys.ToArray();
 
+            //create MenuList
             var skinList = new MenuList("skins", "Skins", skinNames);
 
             MainMenu.Add(skinList);
 
-            Game.OnUpdate += OnUpdate;
+            //skinList event handler
             skinList.ValueChanged += SkinListOnValueChanged;
 
-            Console.WriteLine(skinList.Items.Length);
-            Console.WriteLine(MainMenu["skins"].GetValue<MenuList>().Index);
-
+            //retarded check if our last index is >= array length
             if (MainMenu["skins"].GetValue<MenuList>().Index >= skinList.Items.Length)
                 MainMenu["skins"].GetValue<MenuList>().Index = 0;
-
-            Console.WriteLine(MainMenu["skins"].GetValue<MenuList>().Index);
-        }
-
-        private static void OnUpdate(EventArgs args)
-        {
-
         }
 
         private static void SkinListOnValueChanged(object sender, EventArgs e)
         {
-            var skinList = (MenuList)sender;
-            Console.WriteLine(skinList.SelectedValue);
-
             if (MainMenu["useSkinChanger"].GetValue<MenuBool>().Enabled)
             {
+                var skinList = (MenuList)sender;
+
                 var player = ObjectManager.Player;
                 var selectedSkin = skinList.SelectedValue;
-                var skinIdToSet = Test.Skins[player.CharacterName][selectedSkin];
+
+                //picking skin id
+                var skinIdToSet = ChampionSkinData.Skins[player.CharacterName][selectedSkin];
 
                 player.SetSkin(skinIdToSet);
             }
