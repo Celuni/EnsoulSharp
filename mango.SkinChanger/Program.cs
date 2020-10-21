@@ -58,6 +58,9 @@ namespace mango.SkinChanger
             //retarded check if our last index is >= array length
             if (MainMenu["skins"].GetValue<MenuList>().Index >= skinList.Items.Length)
                 MainMenu["skins"].GetValue<MenuList>().Index = 0;
+
+            //setting skin OnLoad
+            ObjectManager.Player.SetSkin(ChampionSkinData.Skins[ObjectManager.Player.CharacterName][skinList.SelectedValue]);
         }
 
         private static void SkinListOnValueChanged(object sender, EventArgs e)
