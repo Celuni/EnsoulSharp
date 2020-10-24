@@ -34,6 +34,8 @@ namespace mango.SkinChanger
 
         private static void OnGameLoad()
         {
+            Game.OnNotify += OnNotify; 
+
             Game.Print("mango.SkinChanger loaded", Color.Coral);
 
             //main menu
@@ -63,20 +65,31 @@ namespace mango.SkinChanger
             ObjectManager.Player.SetSkin(ChampionSkinData.Skins[ObjectManager.Player.CharacterName][skinList.SelectedValue]);
         }
 
-        private static void SkinListOnValueChanged(object sender, EventArgs e)
+        private static void OnNotify(GameNotifyEventArgs args)
         {
-            if (MainMenu["useSkinChanger"].GetValue<MenuBool>().Enabled)
+            switch (args.EventId)
             {
-                var skinList = (MenuList)sender;
-
-                var player = ObjectManager.Player;
-                var selectedSkin = skinList.SelectedValue;
-
-                //picking skin id
-                var skinIdToSet = ChampionSkinData.Skins[player.CharacterName][selectedSkin];
-
-                player.SetSkin(skinIdToSet);
+                case GameEventId.OnReincarnate:
+                case GameEventId.OnResetChampion:
+                    SetSkinId();
+                    break;
             }
+        }
+
+        private static void SkinListOnValueChanged(object sender, EventArgs e) => SetSkinId();
+        
+        private static void SetSkinId()
+        {
+            if (!MainMenu["useSkinChanger"].GetValue<MenuBool>().Enabled) return;
+            var skinList = MainMenu["skins"].GetValue<MenuList>();
+
+            var player = ObjectManager.Player;
+            var selectedSkin = skinList.SelectedValue;
+
+            //picking skin id
+            var skinIdToSet = ChampionSkinData.Skins[player.CharacterName][selectedSkin];
+
+            player.SetSkin(skinIdToSet);
         }
     }
 }
